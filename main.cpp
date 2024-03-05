@@ -6,8 +6,46 @@
 // Libraries
 #include <iostream>   // include iostream library to use cout (output) and cin (input) functions
 #include <string>     // include string library to use string data type
+#include <bitset>     // include bitset library to use bitset data type
+#include <vector>     // include vector library to use vector data type
 
 using namespace std;     // using namespace std to avoid writing std:: before every cout, cin, string, etc.
+
+// DES Initial Permutation (IP) Table
+int IP[64] = {
+    58, 50, 42, 34, 26, 18, 10, 2,
+    60, 52, 44, 36, 28, 20, 12, 4,
+    62, 54, 46, 38, 30, 22, 14, 6,
+    64, 56, 48, 40, 32, 24, 16, 8,
+    57, 49, 41, 33, 25, 17, 9, 1,
+    59, 51, 43, 35, 27, 19, 11, 3,
+    61, 53, 45, 37, 29, 21, 13, 5,
+    63, 55, 47, 39, 31, 23, 15, 7
+};
+
+// DES Permuted Choice 1 (PC-1) Table
+int IP[64] = {
+    57, 49, 41, 33, 25, 17, 9,
+    1, 58, 50, 42, 34, 26, 18,
+    10, 2, 59, 51, 43, 35, 27,
+    19, 11, 3, 60, 52, 44, 36, 
+    63, 55, 47, 39, 31, 23, 15,
+    7, 62, 54, 46, 38, 30, 22,
+    14, 6, 61, 53, 45, 37, 29,
+    21, 13, 5, 28, 20, 12, 4
+};
+
+// DES Permuted Choice 2 (PC-2) Table
+int IP[64] = {
+    14, 17, 11, 24, 1, 5,
+    3, 28, 15, 6, 21, 10,
+    23, 19, 12, 4, 26, 8,
+    16, 7, 27, 20, 13, 2,
+    41, 52, 31, 37, 47, 55,
+    30, 40, 51, 45, 33, 48,
+    44, 49, 39, 56, 34, 53,
+    46, 42, 50, 36, 29, 32 
+};
 
 // Placeholder for the encrypt function
 string encrypt(const string& plaintext, const string& key) {
@@ -20,6 +58,10 @@ string decrypt(const string& ciphertext, const string& key) {
     // TODO: Implement the decryption algorithm here
     return "decrypted_text";
 }
+
+
+
+
 
 // main function
 int main() {
