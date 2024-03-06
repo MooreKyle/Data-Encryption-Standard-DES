@@ -111,7 +111,15 @@ vector<bitset<48>> generateRoundKeys(const bitset<64>& key) {
     return roundKeys;
 }
 
-// Placeholder for the encrypt function
+/* encrypt function implements the entire DES encryption algorithm workflow
+       1. Takes plaintext and key as input
+       2. Converts the plaintext and key from strings to bitset<64> (binary format)
+       3. Generates the 16 round keys required for DES encryption
+           3.1 Apply PC-1 to reduce the 64-bit secret key to a 56-bit key
+           3.2 Split the 56-bit key into two halves
+           3.3 Perform a series of left shifts (rotations) on the two halves, specific to each round.
+           3.4 Apply PC-2 to each combination of the two left-shifted left and right halves to produce a 48-bit round key
+           3.5 Repeat the process to generate 16 total round keys */
 string encrypt(const string& plaintext, const string& key) {
     //Convert the key to bitset<64>
         // Necessary to change key from string format to binary format (bitset), as DES operates on binary data
@@ -122,6 +130,9 @@ string encrypt(const string& plaintext, const string& key) {
             // Will be used to apply PC-1, rotation, and PC-2
     vector<bitset<48>> roundKeys = generateRoundKeys(keyBits); // Generate round keys
     
+    // Convert plaintext to bitset and apply initial permutation
+        // Important for the diffusion process, setting the stage for the encryption rounds
+            // Ensures the data is mixed throughly before encryption begins
     bitset<64> plaintextBits = stringToBitset64(plaintext); // Convert plaintext to bitset
     bitset<64> permutedPlaintext = applyInitialPermutation(plaintextBits); // Apply IP to plaintext bitset
 
