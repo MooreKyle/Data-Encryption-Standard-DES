@@ -57,6 +57,28 @@ int PC2[48] = {
     46, 42, 50, 36, 29, 32 
 };
 
+// Function to convert a string to a bitset<64>
+    // Necessary because the DES algorithm operates on 64-bit blocks of data (binary data)
+bitset<64> stringToBitset64(const string& str) {
+    bitset<64> bits;
+    for(size_t i = 0; i < str.size(); ++i) {
+        for(size_t j = 0; j < 8 && i * 8 + j < 64; ++j) {
+            bits[i * 8 + j] = (str[i] >> j) & 1;
+        }
+    }
+    return bits;
+}
+
+// Function to apply the Initial Permutation (IP) to a bitset<64>
+    // Reorders the 64-bit block according to the DES standard's IP table, setting up the data for subsequent encryption rounds
+bitset<64> applyInitialPermutation(const bitset<64>& input) {
+    bitset<64> output;
+    for(int i = 0; i < 64; ++i) {
+        output[63-i] = input[IP[i]-1];
+    }
+    return output;
+}
+
 // Placeholder for the encrypt function
 string encrypt(const string& plaintext, const string& key) {
     // TODO: Implement the encryption algorithm here
@@ -84,6 +106,12 @@ int main() {
     // Get the secret key from the user
     cout << "Enter the secret key: ";
     getline(cin, key);
+
+    // Convert plaintext string from user to bitset<64>
+    bitset<64> plaintextBits = stringToBitset64(plaintext);
+
+    // Apply Initial Permutation to plaintext bitset
+    bitset<64> permutedPlaintext = applyInitialPermutation(plaintextBits);
     
     // Encrypt the plaintext
     string ciphertext = encrypt(plaintext, key);     // attempt to encrypt the plaintext & show result of encryption process
