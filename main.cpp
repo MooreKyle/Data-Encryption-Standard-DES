@@ -11,6 +11,9 @@
 
 using namespace std;     // using namespace std to avoid writing std:: before every cout, cin, string, etc.
 
+// Global declaration for left shift schedule
+int leftShifts[16] = {1, 1, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1};
+
 // DES Initial Permutation (IP) Table
     // Used at beginning of the DES encryption process to permute the original plaintext block
         // Initial permutation's process helps faciliate the diffusion process by preparing the data through mixing it before the rounds of encryption start
@@ -79,9 +82,52 @@ bitset<64> applyInitialPermutation(const bitset<64>& input) {
     return output;
 }
 
+// Function that generates and returns the 16 round keys required for DES encryption.
+vector<bitset<48>> generateRoundKeys(const bitset<64>& key) {
+    vector<bitset<48>> roundKeys(16);     // Vector to hold the 16 generated round keys
+    bitset<56> key56;   // Bitset to hold the 56-bit key  
+    // Apply PC-1 to get a 56-bit key from the original 64-bit key
+    for(int i = 0; i < 56; ++i) {
+        key56[55-i] = key[64-PC1[i]];
+    }
+
+    // Split the 56-bit key into two halves
+    bitset<28> left = bitset<28>((key56.to_ullong() >> 28) & 0x0FFFFFFF);
+    bitset<28> right = bitset<28>(key56.to_ullong() & 0x0FFFFFFF);
+
+    // Generate the 16 round keys
+    for(int round = 0; round < 16; ++round) {
+        // Left shifting the halves
+        left = bitset<28>((left.to_ulong() << leftShifts[round]) | (left.to_ulong() >> (28 - leftShifts[round])));
+        right = bitset<28>((right.to_ulong() << leftShifts[round]) | (right.to_ulong() >> (28 - leftShifts[round])));
+
+        // Combine the halves and apply PC-2
+        bitset<56> combined = (bitset<56>(left.to_ulong()) << 28) | bitset<56>(right.to_ulong());
+        for(int i = 0; i < 48; ++i) {
+            roundKeys[round][47-i] = combined[56-PC2[i]];
+        }
+    }
+
+    return roundKeys;
+}
+
 // Placeholder for the encrypt function
 string encrypt(const string& plaintext, const string& key) {
-    // TODO: Implement the encryption algorithm here
+    //Convert the key to bitset<64>
+        // Necessary to change key from string format to binary format (bitset), as DES operates on binary data
+    bitset<64> keyBits = stringToBitset64(key);
+
+    // Generate the 16 round keys
+        // Prepare the 16 round keys that will be used, one for each of the 16 rounds of DES encryption
+            // Will be used to apply PC-1, rotation, and PC-2
+    vector<bitset<48>> roundKeys = generateRoundKeys(keyBits); // Generate round keys
+    
+    bitset<64> plaintextBits = stringToBitset64(plaintext); // Convert plaintext to bitset
+    bitset<64> permutedPlaintext = applyInitialPermutation(plaintextBits); // Apply IP to plaintext bitset
+
+    // Placeholder for DES rounds process
+
+    // Placeholder to apply final permutation to encryptedData
     return "encrypted_text";
 }
 
@@ -107,15 +153,20 @@ int main() {
     cout << "Enter the secret key: ";
     getline(cin, key);
 
+    // Convert key string from user to bitset<64>
+    bitset<64> keyBits = stringToBitset64(key);
+
     // Convert plaintext string from user to bitset<64>
     bitset<64> plaintextBits = stringToBitset64(plaintext);
 
     // Apply Initial Permutation to plaintext bitset
     bitset<64> permutedPlaintext = applyInitialPermutation(plaintextBits);
-    
+
     // Encrypt the plaintext
     string ciphertext = encrypt(plaintext, key);     // attempt to encrypt the plaintext & show result of encryption process
     cout << "Ciphertext: " << ciphertext << endl;
+
+    // ------------------------------------------------------------------------------------------------------------------------------
     
     // Decrypt the ciphertext
     string decryptedText = decrypt(ciphertext, key);     // attempt to recover the original plaintext & show result of decryption process
