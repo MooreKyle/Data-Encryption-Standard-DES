@@ -32,7 +32,7 @@ int IP[64] = {
 // DES Permuted Choice 1 (PC-1) Table
     // Used in key generation process. It selects 56 bits (following the fixed order defined by the table) from the original 64 bit-key, dropping 8 bits (usually parity bits).
         // The parity bits are used in the original key. They are NOT used for (en/de)cryption, but are used to check for errors in the key when keys are transmitted or stored
-int IP[64] = {
+int PC1[56] = {
     57, 49, 41, 33, 25, 17, 9,
     1, 58, 50, 42, 34, 26, 18,
     10, 2, 59, 51, 43, 35, 27,
@@ -46,7 +46,7 @@ int IP[64] = {
 // DES Permuted Choice 2 (PC-2) Table
     // Used in key generation process. It selects 48 bits from the 56-bit key (post-PC-1 processing), following the fixed order defined by the table.
         // These 48 bits form the round key for each of the 16 (en/de)cryption rounds (each round yields a 48-bit subkey)
-int IP[64] = {
+int PC2[48] = {
     14, 17, 11, 24, 1, 5,
     3, 28, 15, 6, 21, 10,
     23, 19, 12, 4, 26, 8,
