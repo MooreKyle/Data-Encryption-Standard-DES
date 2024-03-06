@@ -13,6 +13,11 @@ using namespace std;     // using namespace std to avoid writing std:: before ev
 
 // DES Initial Permutation (IP) Table
     // Used at beginning of the DES encryption process to permute the original plaintext block
+        // Initial permutation's process helps faciliate the diffusion process by preparing the data through mixing it before the rounds of encryption start
+            // 1. The 64-bit plaintext block is permuted according to the fixed order defined by the table
+            // 2. The permuted block is then divided into two halves, a left half (L0) and a right half (R0), each 32 bits long
+            // 3. The two halves are then processed through 16 rounds of (en/de)cryption
+            // 4. The final output of the 16th round is then permuted using the Inverse Initial Permutation (IP^-1) Table to produce the 64-bit ciphertext block
 int IP[64] = {
     58, 50, 42, 34, 26, 18, 10, 2,
     60, 52, 44, 36, 28, 20, 12, 4,
