@@ -299,6 +299,13 @@ bitset<64> finalPermutationFunction(const bitset<64>& combinedData) {
     return finalPermuted;
 }
 
+// Utility function to convert bitset<64> to hex string for output
+string bitsetToHex(const bitset<64>& bs) {
+    stringstream ss;
+    ss << hex << uppercase << bs.to_ullong();
+    return ss.str();
+}
+
 /* encrypt function implements the entire DES encryption algorithm workflow
        1. Takes plaintext and key as input
        2. Converts the plaintext and key from strings to bitset<64> (binary format)
@@ -354,7 +361,7 @@ string encrypt(const string& plaintext, const string& key) {
 
     // Apply final permutation to the combined block to produce the ciphertext
         // Combine left and right halves to prepare for final permutation (after all rounds)
-    bitset<64> combined = combineLeftAndRight(left, right);
+    bitset<64> combined = combineLeftAndRight(left, right);     // After the final (16th) round, an additional swap is performed before the final permutation
     // Final permutation is applied to the combined left and right halves of the 16th round to produce the 64-bit ciphertext block
         // This step is the inverse of the initial permutation performed at the beginning of the encryption process, ensuring that the structure of the output block is rearranged according to the DES standard.
             // The result of this permutation is the ciphertext, which is now ready to be transmitted or stored securely.
