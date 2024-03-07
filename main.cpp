@@ -219,14 +219,43 @@ const int S_BOX8[8][4][16] = {
 // Substitution function that applies the S-boxes to a 48-bit input, producing a 32-bit output
 bitset<32> substitutionFunction(const bitset<48>& rightHalfXORedWithKey) {
     bitset<32> substituted;
-    // TODO: Implement the substitution function with S-boxes according to DES specification
+    const int (*S_BOXES[8])[4][16] = {S_BOX1, S_BOX2, S_BOX3, S_BOX4, S_BOX5, S_BOX6, S_BOX7, S_BOX8};
+
+    for(int i = 0; i < 8; ++i) {
+        int section = (rightHalfXORedWithKey >> (42 - 6 * i)).to_ulong() & 0x3F; // Extract 6 bits
+        int row = (section & 0x20) >> 4 | (section & 0x01); // First and last bits for row
+        int col = (section >> 1) & 0x0F; // Middle 4 bits for column
+        int sBoxValue = (*S_BOXES[i])[row][col];
+        
+        // Place the 4-bit S-box value in the output
+        for(int j = 0; j < 4; ++j) {
+            substituted[31 - i * 4 - j] = (sBoxValue >> (3 - j)) & 1;
+        }
+    }
+
     return substituted;
 }
 
+// DES Permutation (P) Table - used after the S-box substitution
+int P_TABLE[32] = {
+    16, 7, 20, 21,
+    29, 12, 28, 17,
+    1, 15, 23, 26,
+    5, 18, 31, 10,
+    2, 8, 24, 14,
+    32, 27, 3, 9,
+    19, 13, 30, 6,
+    22, 11, 4, 25,
+};
+
 // Permutation function that applies a permutation to the 32-bit output of the substitution step
+    // Rearranges the bits after substitution to directly create diffusion in the data
+        // The permutation function is a crucial part of the DES algorithm, as it ensures that the data is thoroughly mixed before the next round of encryption begins
 bitset<32> permutationFunction(const bitset<32>& substitutedHalf) {
     bitset<32> permuted;
-    // TODO: Implement the permutation function according to DES specification
+    for(int i = 0; i < 32; ++i) {
+        permuted[31 - i] = substitutedHalf[P_TABLE[i] - 1];
+    }
     return permuted;
 }
 
