@@ -334,7 +334,8 @@ string encrypt(const string& plaintext, const string& key) {
     // The heart/core of DES encryption process
         // Iterates through 16 rounds of processing. Each round includes expanding the right half of the data, XORing with a round-specific key, applying substitution boxes to introduce non-linearity, and a final permutation to mix the data thoroughly.
         // The swapping of the left and right halves at each round's end ensures that the encryption process is both secure and complex.
-    bitset<32> left, right, expandedRight, xorWithKey, substituted, permuted;
+    bitset<32> left((permutedPlaintext >> 32).to_ulong()), right((permutedPlaintext & bitset<64>(0xFFFFFFFF)).to_ulong());
+    bitset<32> expandedRight, xorWithKey, substituted, permuted;
 
     for (int round = 0; round < 16; ++round) {
         // Expand the right half from 32 to 48 bits to prepare for XOR with the round key
@@ -361,7 +362,7 @@ string encrypt(const string& plaintext, const string& key) {
 
     // Apply final permutation to the combined block to produce the ciphertext
         // Combine left and right halves to prepare for final permutation (after all rounds)
-    bitset<64> combined = combineLeftAndRight(left, right);     // After the final (16th) round, an additional swap is performed before the final permutation
+    bitset<64> combined = combineLeftAndRight(right, left);     // After the final (16th) round, an additional swap is performed before the final permutation
     // Final permutation is applied to the combined left and right halves of the 16th round to produce the 64-bit ciphertext block
         // This step is the inverse of the initial permutation performed at the beginning of the encryption process, ensuring that the structure of the output block is rearranged according to the DES standard.
             // The result of this permutation is the ciphertext, which is now ready to be transmitted or stored securely.

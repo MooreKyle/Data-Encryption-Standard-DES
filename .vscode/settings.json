@@ -1,6 +1,7 @@
 {
     "files.associations": {
         "bitset": "cpp",
-        "xstring": "cpp"
+        "xstring": "cpp",
+        "iostream": "cpp"
     }
 }
