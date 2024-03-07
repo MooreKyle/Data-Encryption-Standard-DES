@@ -111,6 +111,41 @@ vector<bitset<48>> generateRoundKeys(const bitset<64>& key) {
     return roundKeys;
 }
 
+// Expansion function to expand a 32-bit half block to 48 bits
+bitset<48> expansionFunction(const bitset<32>& rightHalf) {
+    bitset<48> expandedRight;
+    // TODO: Implement the expansion function according to DES specification
+    return expandedRight;
+}
+
+// Substitution function that applies the S-boxes to a 48-bit input, producing a 32-bit output
+bitset<32> substitutionFunction(const bitset<48>& rightHalfXORedWithKey) {
+    bitset<32> substituted;
+    // TODO: Implement the substitution function with S-boxes according to DES specification
+    return substituted;
+}
+
+// Permutation function that applies a permutation to the 32-bit output of the substitution step
+bitset<32> permutationFunction(const bitset<32>& substitutedHalf) {
+    bitset<32> permuted;
+    // TODO: Implement the permutation function according to DES specification
+    return permuted;
+}
+
+// Function to combine the left and right halves after the final round, before final permutation
+bitset<64> combineLeftAndRight(const bitset<32>& left, const bitset<32>& right) {
+    bitset<64> combined;
+    // TODO: Implement the function to combine the left and right halves
+    return combined;
+}
+
+// Final permutation function that applies the final permutation to the data after 16 rounds
+bitset<64> finalPermutationFunction(const bitset<64>& combinedData) {
+    bitset<64> finalPermuted;
+    // TODO: Implement the final permutation function according to DES specification
+    return finalPermuted;
+}
+
 /* encrypt function implements the entire DES encryption algorithm workflow
        1. Takes plaintext and key as input
        2. Converts the plaintext and key from strings to bitset<64> (binary format)
@@ -136,9 +171,42 @@ string encrypt(const string& plaintext, const string& key) {
     bitset<64> plaintextBits = stringToBitset64(plaintext); // Convert plaintext to bitset
     bitset<64> permutedPlaintext = applyInitialPermutation(plaintextBits); // Apply IP to plaintext bitset
 
-    // Placeholder for DES rounds process
+    // The heart/core of DES encryption process
+        // Iterates through 16 rounds of processing. Each round includes expanding the right half of the data, XORing with a round-specific key, applying substitution boxes to introduce non-linearity, and a final permutation to mix the data thoroughly.
+        // The swapping of the left and right halves at each round's end ensures that the encryption process is both secure and complex.
+    bitset<32> left, right, expandedRight, xorWithKey, substituted, permuted;
 
-    // Placeholder to apply final permutation to encryptedData
+    for (int round = 0; round < 16; ++round) {
+        // Expand the right half from 32 to 48 bits to prepare for XOR with the round key
+        expandedRight = expansionFunction(right); // TODO: Implement expansion function
+        // XORs the expanded right half with the current round key to mix in the key's data
+        xorWithKey = expandedRight ^ roundKeys[round];
+        // Apply the S-boxes to the result of the XOR operation, reducing it from 48 to 32 bits while introducing non-linearity (confusion)
+        substituted = substitutionFunction(xorWithKey); // TODO: Implement substitution function
+        // Permutates the substituted bits to further scramble the data (diffusion)
+        permuted = permutationFunction(substituted); // TODO: Implement permutation function
+
+        // Saves the current right half for swapping: This step prepares for the next round by temporarily storing the current right half
+            // In the DES encryption process, swapping the left and right halves at the end of each round ensures that the encryption is thoroughly mixed, contributing to the security and complexity of the final ciphertext. 
+            // *****This swapping mechanism is fundamental to the Feistel structure of DES, which ensures that each round's operations can't be easily reversed without the correct key.*****
+                // XOR the permuted bits with the left half to mix in the data from the right half
+        bitset<32> temp = right;
+        // Right half results from XOR of left half with the permuted bits, which blends the halves together
+            // Operation mixes the two halves together, using the results of the substitution and permutation steps, which introduced confusion and diffusion respectively, into the data
+        right = left ^ permuted;
+        // Updates the left half to the previous round's stored right half (completes the swap)
+            // Crucial for the Feistel structure: allows each round to build on the complexity introduced in previous rounds, enhancing security of the encryption process
+        left = temp; // Swap for next round
+    }
+
+    // Apply final permutation to the combined block to produce the ciphertext
+        // Combine left and right halves to prepare for final permutation (after all rounds)
+    bitset<64> combined = combineLeftAndRight(left, right); // TODO: Implement combineLeftAndRight function
+    // Final permutation is applied to the combined left and right halves of the 16th round to produce the 64-bit ciphertext block
+        // This step is the inverse of the initial permutation performed at the beginning of the encryption process, ensuring that the structure of the output block is rearranged according to the DES standard.
+            // The result of this permutation is the ciphertext, which is now ready to be transmitted or stored securely.
+    bitset<64> finalPermutation = finalPermutationFunction(combined); // TODO: Implement finalPermutationFunction
+
     return "encrypted_text";
 }
 
