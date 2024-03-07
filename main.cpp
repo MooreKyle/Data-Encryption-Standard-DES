@@ -262,14 +262,40 @@ bitset<32> permutationFunction(const bitset<32>& substitutedHalf) {
 // Function to combine the left and right halves after the final round, before final permutation
 bitset<64> combineLeftAndRight(const bitset<32>& left, const bitset<32>& right) {
     bitset<64> combined;
-    // TODO: Implement the function to combine the left and right halves
+
+    // Combine the left half
+    for (int i = 0; i < 32; ++i) {
+        combined[63 - i] = left[31 - i];
+    }
+
+    // Combine the right half
+    for (int i = 0; i < 32; ++i) {
+        combined[31 - i] = right[31 - i];
+    }
+
     return combined;
 }
 
+// DES Final Permutation (FP) (or IP^-1) Table - the inverse of the Initial Permutation
+int FP[64] = {
+    40, 8, 48, 16, 56, 24, 64, 32,
+    39, 7, 47, 15, 55, 23, 63, 31,
+    38, 6, 46, 14, 54, 22, 62, 30,
+    37, 5, 45, 13, 53, 21, 61, 29,
+    36, 4, 44, 12, 52, 20, 60, 28,
+    35, 3, 43, 11, 51, 19, 59, 27,
+    34, 2, 42, 10, 50, 18, 58, 26,
+    33, 1, 41, 9, 49, 17, 57, 25
+};
+
 // Final permutation function that applies the final permutation to the data after 16 rounds
+    // Takes the 64-bit combinedData from combining the left and right halves, and applies the Final Permutation (FP) (or IP^-1) to reorder the bits for the final ciphertext output
+        // The final permutation is the inverse of the initial permutation, ensuring that the structure of the output block is rearranged according to the DES standard
 bitset<64> finalPermutationFunction(const bitset<64>& combinedData) {
     bitset<64> finalPermuted;
-    // TODO: Implement the final permutation function according to DES specification
+    for (int i = 0; i < 64; ++i) {
+        finalPermuted[63 - i] = combinedData[FP[i] - 1];
+    }
     return finalPermuted;
 }
 
@@ -305,13 +331,13 @@ string encrypt(const string& plaintext, const string& key) {
 
     for (int round = 0; round < 16; ++round) {
         // Expand the right half from 32 to 48 bits to prepare for XOR with the round key
-        expandedRight = expansionFunction(right); // TODO: Implement expansion function
+        expandedRight = expansionFunction(right);
         // XORs the expanded right half with the current round key to mix in the key's data
         xorWithKey = expandedRight ^ roundKeys[round];
         // Apply the S-boxes to the result of the XOR operation, reducing it from 48 to 32 bits while introducing non-linearity (confusion)
-        substituted = substitutionFunction(xorWithKey); // TODO: Implement substitution function
+        substituted = substitutionFunction(xorWithKey);
         // Permutates the substituted bits to further scramble the data (diffusion)
-        permuted = permutationFunction(substituted); // TODO: Implement permutation function
+        permuted = permutationFunction(substituted);
 
         // Saves the current right half for swapping: This step prepares for the next round by temporarily storing the current right half
             // In the DES encryption process, swapping the left and right halves at the end of each round ensures that the encryption is thoroughly mixed, contributing to the security and complexity of the final ciphertext. 
@@ -328,11 +354,11 @@ string encrypt(const string& plaintext, const string& key) {
 
     // Apply final permutation to the combined block to produce the ciphertext
         // Combine left and right halves to prepare for final permutation (after all rounds)
-    bitset<64> combined = combineLeftAndRight(left, right); // TODO: Implement combineLeftAndRight function
+    bitset<64> combined = combineLeftAndRight(left, right);
     // Final permutation is applied to the combined left and right halves of the 16th round to produce the 64-bit ciphertext block
         // This step is the inverse of the initial permutation performed at the beginning of the encryption process, ensuring that the structure of the output block is rearranged according to the DES standard.
             // The result of this permutation is the ciphertext, which is now ready to be transmitted or stored securely.
-    bitset<64> finalPermutation = finalPermutationFunction(combined); // TODO: Implement finalPermutationFunction
+    bitset<64> finalPermutation = finalPermutationFunction(combined);
 
     return "encrypted_text";
 }
